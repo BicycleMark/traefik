@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config/dynamic:/etc/traefik/dynamic:ro
+      - ./certs:/etc/certs:ro
+    networks:
+      - home-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+
+  nginx1:
+    image: nginx:latest
+    container_name: nginx1
+    restart: unless-stopped
+    volumes:
+      - ./nginx1/html:/usr/share/nginx/html
+    networks:
+      - home-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx1.rule=Host(`nginx1.localhost`)"
+      - "traefik.http.services.nginx1.loadbalancer.server.port=80"
+
+  nginx2:
+    image: nginx:latest
+    container_name: nginx2
+    restart: unless-stopped
+    volumes:
+      - ./nginx2/html:/usr/share/nginx/html
+    networks:
+      - home-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx2.rule=Host(`nginx2.localhost`)"
+      - "traefik.http.services.nginx2.loadbalancer.server.port=80"
+
+networks:
+  home-net:
+    external: true
