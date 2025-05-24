@@ -5,6 +5,12 @@ services:
     image: traefik:v2.10
     container_name: traefik
     restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - "CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}"
+      - "CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}"
+    # ...rest of traefik configuration...
     security_opt:
       - no-new-privileges:true
     ports:
@@ -34,8 +40,11 @@ services:
       - home-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nginx1.rule=Host(`nginx1.localhost`)"
+      - "traefik.http.routers.nginx1.rule=Host(`nginx1.wardellsgarage.com`)"
       - "traefik.http.services.nginx1.loadbalancer.server.port=80"
+      - "traefik.http.routers.nginx1.entrypoints=websecure"
+      - "traefik.http.routers.nginx1.tls=true"
+      - "traefik.http.routers.nginx1.tls.certresolver=cloudflare"
 
   nginx2:
     image: nginx:latest
@@ -47,8 +56,11 @@ services:
       - home-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nginx2.rule=Host(`nginx2.localhost`)"
+      - "traefik.http.routers.nginx2.rule=Host(`nginx2.wardellsgarage.com`)"
       - "traefik.http.services.nginx2.loadbalancer.server.port=80"
+      - "traefik.http.routers.nginx2.entrypoints=websecure"
+      - "traefik.http.routers.nginx2.tls=true"
+      - "traefik.http.routers.nginx2.tls.certresolver=cloudflare"
 
 networks:
   home-net:
