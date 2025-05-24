@@ -1,0 +1,53 @@
+# Docker & environment files
+.env
+.env.*
+docker-compose.override.yml
+
+# SSL certificates
+certs/*
+*/certs/*
+*.pem
+*.crt
+*.key
+
+# Cloudflare tunnel credentials
+cloudflared/*.json
+cloudflared/cert.pem
+
+# Traefik ACME data
+acme.json
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+data/
+
+# Temporary files
+tmp/
+temp/
+
+# Operating system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node modules (if you add any node apps)
+node_modules/
+
+# Keep directories with .gitkeep
+!certs/.gitkeep
+!cloudflared/.gitkeep
+.env
